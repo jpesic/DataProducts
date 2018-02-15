@@ -1,37 +1,45 @@
-## Welcome to GitHub Pages
+---
+title: "Week 3 Project"
+author: "jpesic"
+date: "February 14, 2018"
+output:
+ # slidy_presentation: default
+  ioslides_presentation: default
+---
 
-You can use the [editor on GitHub](https://github.com/jpesic/DataProducts/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
 
-### Jekyll Themes
+```{r plot, echo=FALSE, warning=FALSE,message=FALSE}
+suppressPackageStartupMessages({library(plotly)})
+require(readr)
+require(lubridate)
+transactions <- read_csv("transactions.csv")
+transactions$Date<-mdy(transactions$Date)
+transactions$Date_Day<-wday((transactions$Date), label=TRUE)
+transactions$Date_Month<-month((transactions$Date), label=TRUE)
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/jpesic/DataProducts/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+```
+## Amazon Spending since 2010
 
-### Support or Contact
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+```{r plot_1, echo=FALSE, message=FALSE, warning=FALSE}
+transactions<-transactions[order(transactions$Date, decreasing = FALSE),]
+transactions$Cum_Amount<-cumsum(transactions$Amount)
+p1<-plot_ly (transactions, x =~Date, y = ~Cum_Amount, type='scatter', color = ~Date_Day)
+p1
+
+```
+
+## Amazon Spending since 2010 (cont)
+
+
+```{r plot_2, echo=FALSE, message=FALSE, warning=FALSE}
+p3<-plot_ly (transactions, x =~year(Date), y = ~Date_Month, type='scatter', size=~Amount, color = ~Date_Day)
+p3
+
+```
+
+
